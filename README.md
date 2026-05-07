@@ -4,20 +4,27 @@ Skill для Codex, который помогает организовать в�
 
 ## Установка
 
-Склонируйте skill в папку skills Codex:
+Самый простой способ: вставьте в чат Cursor/Codex одну команду для агента:
 
-```bash
-mkdir -p ~/.codex/skills
-git clone https://github.com/TAB1C/onec-vibecoding.git ~/.codex/skills/onec-vibecoding
+```text
+Подтяни репозиторий https://github.com/TAB1C/onec-vibecoding в ~/.codex/skills/onec-vibecoding. Если он уже есть, сделай git pull.
 ```
 
-Откройте новый чат Codex и напишите:
+Если нужно выполнить вручную в терминале:
+
+```bash
+bash -lc 'set -e; dir="$HOME/.codex/skills/onec-vibecoding"; mkdir -p "$HOME/.codex/skills"; if [ -d "$dir/.git" ]; then git -C "$dir" pull --ff-only; else rm -rf "$dir"; git clone https://github.com/TAB1C/onec-vibecoding.git "$dir"; fi'
+```
+
+После установки откройте новый чат Codex и напишите:
 
 ```text
 Используй $onec-vibecoding для этой задачи 1С.
 ```
 
 ## Обновление
+
+Та же команда выше обновит skill, если он уже установлен. Можно и коротко:
 
 ```bash
 git -C ~/.codex/skills/onec-vibecoding pull
