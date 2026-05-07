@@ -1,40 +1,42 @@
 # onec-vibecoding
 
-Codex skill for organizing a 1C vibe-coding workspace: extension-first development, `ibcmd`/Designer command-line loops, browser testing, and careful release storage discipline.
+Skill для Codex, который помогает организовать вайб-среду разработки 1С: работа с расширениями, цикл правка-загрузка-тестирование, `ibcmd`/Designer из командной строки, проверка через web-клиент и аккуратная работа с релизным хранилищем.
 
-## Install
+## Установка
 
-Clone the skill into Codex skills directory:
+Склонируйте skill в папку skills Codex:
 
 ```bash
 mkdir -p ~/.codex/skills
 git clone https://github.com/TAB1C/onec-vibecoding.git ~/.codex/skills/onec-vibecoding
 ```
 
-Open a new Codex chat and invoke it:
-
-```text
-Use $onec-vibecoding for this 1C task.
-```
-
-In Russian:
+Откройте новый чат Codex и напишите:
 
 ```text
 Используй $onec-vibecoding для этой задачи 1С.
 ```
 
-## Update
+## Обновление
 
 ```bash
 git -C ~/.codex/skills/onec-vibecoding pull
 ```
 
-## What It Covers
+## Что делает skill
 
-- Work with a 1C extension instead of the whole configuration when possible.
-- Prefer `ibcmd`, batch `1cv8 DESIGNER`, and existing repository scripts.
-- Load changes into a test infobase, update metadata, and verify behavior.
-- Test user flows in the 1C web client through the in-app browser.
-- Reproduce suspected bugs before changing release code.
-- Commit only real production objects to configuration or extension storage.
-- Keep temporary test processing, debug hooks, and fixtures out of release storage.
+- Помогает работать именно с расширением 1С, а не со всей конфигурацией, если задача этого не требует.
+- Подсказывает использовать `ibcmd`, пакетный `1cv8 DESIGNER` и уже существующие скрипты проекта.
+- Описывает цикл: внести правку, загрузить в тестовую базу, обновить метаданные, проверить результат.
+- Напоминает тестировать пользовательские сценарии через web-клиент 1С во встроенном браузере Codex.
+- Требует сначала воспроизвести предполагаемую ошибку, а уже потом менять релизный код.
+- Помогает помещать в хранилище только реально измененные production-объекты.
+- Защищает хранилище от временных обработок, тестовых кнопок, отладочных вставок и fixtures.
+
+## Запасной промпт
+
+Если skill не подхватился автоматически, можно использовать готовый текст из файла:
+
+```text
+references/starter-prompt.md
+```
