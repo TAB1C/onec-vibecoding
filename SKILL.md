@@ -66,14 +66,30 @@ For flaky UI/network errors, distinguish browser/server disconnects from 1C appl
 
 Treat configuration/extension storage as release-sensitive.
 
+Before repository-style "pull/merge/update" work, first bring the local
+configuration/extension state to the latest storage version when the relevant
+objects are not captured by you. After any storage update, merge, or capture
+operation that changes the working configuration state, export the local
+XML/BSL files again so the workspace reflects the real 1C state before further
+edits or commits.
+
 Before putting changes into storage:
 
 1. Derive the exact object list from files actually changed.
-2. Capture only those objects.
-3. Load only those objects from source.
-4. Run metadata check/update.
-5. Commit with a concise Russian comment that describes the real change.
-6. Unlock/release captured objects and verify the storage history contains only intended objects.
+2. Pull/update from storage first if the objects are not already captured and no merge is required.
+3. Capture only those objects.
+4. Load only those objects from source.
+5. Run metadata check/update.
+6. Export the extension back to local files after repository update/merge/load operations.
+7. Commit with a concise Russian comment that describes the real change.
+8. Unlock/release captured objects and verify the storage history contains only intended objects.
+
+When the root extension object is in the object list, treat it as high risk:
+inspect `Configuration.xml` before commit, verify that the extension version did
+not decrease, and check that only intended root-level metadata changed. Add or
+reuse a script guard when possible, for example a pre-commit check that compares
+the local `<Version>` with the latest storage version or an explicit release
+floor such as `REPOSITORY_MIN_EXTENSION_VERSION`.
 
 Never commit temporary test processing, debug buttons, generated fixtures, or exploratory code to release storage. If test UI is useful, prefer a separate local test extension or an external data processor outside the release extension.
 
