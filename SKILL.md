@@ -51,12 +51,14 @@ When a bug is only suspected, reproduce it first. Do not capture storage objects
 
 ## Browser Testing
 
-When the user asks to test in a browser or the current tab is a local 1C web-client, use the Browser Use/in-app browser skill or toolchain rather than macOS `open`.
+When the user asks to test in a browser, the current tab is a local 1C web-client, or a localhost 1C web publication is available, use the Browser Use/in-app browser skill or toolchain. Do not use macOS `open`, Safari, Chrome, external GUI automation, or a system default browser for 1C web-client testing unless the user explicitly asks for that fallback.
+
+Before clicking through a 1C UI scenario, verify that the test target is open in the Codex in-app browser. If it is not, navigate the in-app browser to the local web-client URL first, for example `http://localhost:<port>/<publication>/ru/`. Keep all subsequent clicks, typing, screenshots, and visual checks in that in-app browser so the user can see and interrupt the same test surface.
 
 Typical flow:
 
 1. Publish/start the 1C web endpoint on localhost.
-2. Navigate to the web-client URL, log in if needed, and open the target subsystem or processing.
+2. Navigate the Codex in-app browser to the web-client URL, log in if needed, and open the target subsystem or processing.
 3. Click through the real workflow, capture visible errors, progress state, and final register/result state.
 4. Stop Codex-started web services after testing so configurator/storage operations can lock the DB again.
 
