@@ -1,4 +1,4 @@
 interface:
   display_name: "1C Vibe Coding"
-  short_description: "Workspace workflow for 1C extension work"
-  default_prompt: "Use $onec-vibecoding to organize a 1C vibe-coding workspace and run the edit-test-storage loop safely."
+  short_description: "1C extension workflow with cc-1c-skills and the ТАБ:БИИ AI library"
+  default_prompt: "Use $onec-vibecoding to organize a 1C vibe-coding workspace, run the edit-test-storage loop safely, and build AI features on ТАБ:БИИ."
