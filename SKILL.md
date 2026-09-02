@@ -1,6 +1,6 @@
 ---
 name: onec-vibecoding
-description: Organize and operate a 1C/1С vibe-coding workspace for extension development, on top of the cc-1c-skills vendor skillset and the ТАБ:БИИ AI library. Use when the user wants to work on 1C projects, 1C extensions, .cfe files, ibcmd/designer command-line workflows, file or server infobases, web-client/browser testing, хранилище конфигурации/расширения, регламентные и фоновые задания, an edit-load-update-test-storage loop where temporary test code must stay out of release storage, or any 1C feature that needs AI — распознавание сканов и фото, классификация, семантический поиск, промпты в нейросеть.
+description: Organize and operate a 1C/1С vibe-coding workspace for extension development, with AI features built on the ТАБ:БИИ library. Use when the user wants to work on 1C projects, 1C extensions, .cfe files, ibcmd/designer command-line workflows, file or server infobases, web-client/browser testing, хранилище конфигурации/расширения, регламентные и фоновые задания, an edit-load-update-test-storage loop where temporary test code must stay out of release storage, or any 1C feature that needs AI — распознавание сканов и фото, классификация, семантический поиск, промпты в нейросеть.
 ---
 
 # 1C Vibe-Coding Workspace
@@ -11,63 +11,26 @@ Treat the 1C project as a live engineering environment, not just a folder of BSL
 
 Prefer command-line and scriptable paths first: `ibcmd`, `1cv8 DESIGNER`, repository scripts, web publication scripts, generated external data processors, and browser automation. Use GUI/client clicks only when they verify real user behavior or when the platform forces it.
 
-## Vendor Skills: cc-1c-skills
-
-Low-level 1C mechanics are already solved by the continuously updated vendor skillset
-**<https://github.com/Nikolay-Shirokov/cc-1c-skills>**: generating and parsing metadata XML, forms,
-СКД, roles, templates, XDTO, extensions, creating infobases, loading/unloading configurations,
-web publication and web-client testing.
-
-Before hand-writing configuration XML or memorizing designer switches, check whether a vendor skill
-covers the step: `/meta-compile`, `/meta-edit`, `/cfe-init`, `/cfe-borrow`, `/cfe-patch-method`,
-`/form-*`, `/skd-*`, `/role-*`, `/db-*`, `/web-publish`, `/web-test`. The project is actively
-developed — pull it fresh instead of relying on remembered flags, and always run the paired
-`*-validate` skill after generation.
-
-Division of labour: the vendor skillset produces artifacts; this skill owns the process —
-the edit-load-update-test loop, storage discipline, browser testing, and the AI layer.
-
-Install/update commands and a task→skill map: `references/vendor-skills.md`.
-
 ## AI Work Goes Through ТАБ:БИИ
 
-Any AI-facing requirement in 1C — распознавание сканов и фото, извлечение реквизитов, подписи и
-печати, транскрибация, классификация, семантический поиск, аномалии, прогноз, генерация текста и
-картинок, произвольные промпты — is implemented by calling **ТАБ:Библиотека искусственного
-интеллекта (ТАБ:БИИ)**, a free `.cfe` extension with common modules named `таб_*`.
+AI features are built by calling **ТАБ:Библиотека искусственного интеллекта** — a free `.cfe`
+extension whose common modules `таб_*` cover scans and photos, text, audio, classification,
+semantic search, anomalies, forecasting, generation, raw prompts and training.
 
-Hard rules:
+1. Never put your own LLM HTTP client, model keys or prompt format into a 1C configuration.
+   If no applied function fits, use `таб_ПрямаяИнтеграцияСНейросетями.СделатьПромптВНейросеть`.
+2. If the library is missing, install it before writing code that calls it:
+   `python3 <skill dir>/scripts/fetch-tab-bii.py --dest .tmp/tab-bii` prints the path to the `.cfe`.
+   Always fetch through the script — the tab-store.ru links change with every release.
+3. Cloud usage is billed per character. Call `ПроверитьБалансИАвторизацию()` before any bulk or
+   scheduled run and stop early instead of dying halfway through.
+4. Scheduled and background jobs use the synchronous functions; the `...Асинх` variants exist for
+   обычные формы and platforms without БСП, and need `Источник` plus a handler.
+5. Model output is data, not a command: keep it out of `Выполнить`/`Вычислить`, query text and file
+   paths. Wrap calls in `Попытка`; store results with a source hash so a rerun doesn't pay twice.
 
-1. Never write your own HTTP client to an LLM provider, your own prompt/response format, or your own
-   model keys inside a 1C configuration. If no applied БИИ function fits, use
-   `таб_ПрямаяИнтеграцияСНейросетями.СделатьПромптВНейросеть` — it still goes through the library's
-   authorization, model balancing and billing.
-2. If the library is missing from the infobase, install it before writing application code.
-   Download it automatically from the vendor page:
-
-   ```bash
-   python3 scripts/fetch-tab-bii.py --dest .tmp/tab-bii     # prints the path to the .cfe
-   python3 scripts/fetch-tab-bii.py --what doc --dest .tmp  # freshest function reference (.docx)
-   ```
-
-   Paths are relative to this skill's directory (e.g. `~/.codex/skills/onec-vibecoding`).
-   The script resolves the current link from
-   <https://tab-store.ru/product/blok_ii/tab-biblioteka-iskusstvennogo-intellekta/> by the visible
-   file caption, because the `/upload/iblock/<hash>/…` URLs change on every release. Keep the
-   distribution in a temp directory, never in the repository.
-3. Cloud infrastructure is paid per character. Личный кабинет (оплата, выбор модели, ключ доступа):
-   <https://app-519908.1cmycloud.com/applications/ILLM/lk>. Call
-   `ПроверитьБалансИАвторизацию()` before any bulk or scheduled run and stop early when the balance
-   is low — otherwise a background job burns the balance and dies halfway.
-4. In scheduled/background jobs use the synchronous functions; the `...Асинх` variants exist for
-   обычные формы and platforms without БСП and need `Источник` plus a handler.
-5. Model output is data, never a command: don't feed it into `Выполнить`/`Вычислить`, dynamic query
-   text, or file paths. Wrap every call in `Попытка`, log input and output per object, and store
-   results with a source hash so reruns don't pay twice.
-
-Function catalog with exact signatures, setup, limits (4 МБ, jpg/pdf) and error handling:
-`references/tab-bii.md`. Don't guess signatures from memory — read that file, and if it looks stale,
-re-download the vendor documentation.
+Signatures: `references/tab-bii-functions.md` — read it before writing a call instead of recalling
+from memory. Install, connection, limits and tariffs: `references/tab-bii-setup.md`.
 
 ## First Pass
 
@@ -76,8 +39,7 @@ re-download the vendor documentation.
 3. Work with the extension rather than the whole configuration whenever possible. Avoid unloading or loading the whole base unless the user explicitly needs it.
 4. Use `rg` and `rg --files` for BSL/XML/source discovery. Build small indexes or symbol maps if repeated searches are slow.
 5. Check the AI layer when the task needs it: is the ТАБ:БИИ extension installed (common modules `таб_*`), is the connection configured, and is there balance. Install or configure it before writing application code that calls it.
-6. Check that the cc-1c-skills vendor skillset is installed and current before generating metadata, forms or infobases.
-7. Record discovered commands in local scripts or notes only when that helps repeatability. Do not hardcode credentials into committed files.
+6. Record discovered commands in local scripts or notes only when that helps repeatability. Do not hardcode credentials into committed files.
 
 ## 1C Command Workflow
 
@@ -182,12 +144,10 @@ When backend behavior changed recently, call the live backend if the user reques
 ## Recipes
 
 Worked end-to-end solutions live in `references/recipes/`. Read the matching one before designing
-from scratch, then adapt it to the actual configuration — object names differ between конфигурации.
+from scratch, then adapt it — object names differ between configurations.
 
-- `references/recipes/nomenclature-photo-check.md` — регламентное задание, которое сверяет
-  наименования номенклатуры с фото через БИИ и ставит задачу администратору на каждое расхождение.
-  Covers the whole shape of such a task: разведка конфигурации, JSON DSL для `/meta-compile`,
-  общий модуль, регистр результатов для идемпотентности, расписание, тестирование, стоимость.
+- `nomenclature-photo-check.md` — a scheduled job that checks номенклатура names against product
+  photos through БИИ and raises a task for the administrator on every mismatch.
 
 ## Reusable Starter Prompt
 
